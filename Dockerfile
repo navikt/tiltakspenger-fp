@@ -19,4 +19,4 @@ COPY --from=jre-build /javaruntime $JAVA_HOME
 COPY build/install/* /
 
 USER nobody
-CMD ["tiltakspenger-XXX"]
+CMD ["tiltakspenger-fp"]
