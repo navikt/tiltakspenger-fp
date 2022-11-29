@@ -53,7 +53,7 @@ class ForeldrepengerService(
                     BEHOV.FP_YTELSER to null
                 )
                 loggVedUtgang(packet)
-                context.publish(ident, packet.toJson())
+                // context.publish(ident, packet.toJson())
             }
         }.onFailure {
             loggVedFeil(it, packet)
@@ -94,7 +94,7 @@ class ForeldrepengerService(
             StructuredArguments.keyValue("id", packet["@id"].asText()),
         )
         SECURELOG.error(
-            "feil \"${ex.message}\" ved behandling av tiltak-behov med {} og {}",
+            "feil \"${ex.message}\" ved behandling av fp-behov med {} og {}",
             StructuredArguments.keyValue("id", packet["@id"].asText()),
             StructuredArguments.keyValue("packet", packet.toJson()),
             ex
