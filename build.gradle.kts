@@ -70,7 +70,7 @@ configurations.all {
 }
 
 application {
-    mainClass.set("no.nav.tiltakspenger.ApplicationKt")
+    mainClass.set("no.nav.tiltakspenger.fp.ApplicationKt")
 }
 
 java {
