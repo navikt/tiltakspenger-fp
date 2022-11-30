@@ -11,6 +11,7 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asOptionalLocalDate
 import no.nav.tiltakspenger.fp.abakusclient.AbakusClient
+import no.nav.tiltakspenger.fp.abakusclient.models.YtelseV1
 import java.time.LocalDate
 
 private val LOG = KotlinLogging.logger {}
@@ -19,7 +20,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 @Suppress("UnusedPrivateMember")
 class ForeldrepengerService(
     rapidsConnection: RapidsConnection,
-    client: AbakusClient,
+    private val client: AbakusClient,
 ) : River.PacketListener {
 
     companion object {
@@ -49,19 +50,20 @@ class ForeldrepengerService(
                 "behovId" to packet["@behovId"].asText()
             ) {
                 val ident = packet["ident"].asText()
+                val behovId = packet["@behovId"].asText()
                 SECURELOG.debug { "mottok ident $ident" }
                 val fom: LocalDate = packet["fom"].asOptionalLocalDate() ?: LocalDate.MIN
                 val tom: LocalDate = packet["tom"].asOptionalLocalDate() ?: LocalDate.MAX
 
-                runBlocking(MDCContext()) {
-                    
+                val ytelser: List<YtelseV1> = runBlocking(MDCContext()) {
+                    client.hentYtelser(ident, fom, tom, behovId)
                 }
 
                 packet["@løsning"] = mapOf(
-                    BEHOV.FP_YTELSER to null
+                    BEHOV.FP_YTELSER to ytelser
                 )
                 loggVedUtgang(packet)
-                // context.publish(ident, packet.toJson())
+                context.publish(ident, packet.toJson())
             }
         }.onFailure {
             loggVedFeil(it, packet)

@@ -33,7 +33,7 @@ class AbakusClient(
     }
 
     @Suppress("TooGenericExceptionThrown")
-    suspend fun hentYtelser(fødselsnummer: String, behovId: String): List<YtelseV1> {
+    suspend fun hentYtelser(ident: String, fom: LocalDate, tom: LocalDate, behovId: String): List<YtelseV1> {
         val httpResponse = httpClient.preparePost("${config.baseUrl}/ekstern/hentVedtakForPerson") {
             header(navCallIdHeader, behovId)
             bearerAuth(getToken())
@@ -41,8 +41,8 @@ class AbakusClient(
             contentType(ContentType.Application.Json)
             setBody(
                 Request(
-                    person = Person(fødselsnummer),
-                    periode = Periode(fom = LocalDate.MIN, tom = LocalDate.MAX),
+                    person = Person(ident),
+                    periode = Periode(fom = fom, tom = tom),
                     ytelser = listOf(Ytelser.FORELDREPENGER)
                 )
             )
