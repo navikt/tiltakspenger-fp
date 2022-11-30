@@ -10,15 +10,17 @@ import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asOptionalLocalDate
+import no.nav.tiltakspenger.fp.abakusclient.AbakusClient
 import java.time.LocalDate
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
+@Suppress("UnusedPrivateMember")
 class ForeldrepengerService(
     rapidsConnection: RapidsConnection,
-) :
-    River.PacketListener {
+    client: AbakusClient,
+) : River.PacketListener {
 
     companion object {
         internal object BEHOV {
@@ -52,7 +54,7 @@ class ForeldrepengerService(
                 val tom: LocalDate = packet["tom"].asOptionalLocalDate() ?: LocalDate.MAX
 
                 runBlocking(MDCContext()) {
-
+                    
                 }
 
                 packet["@løsning"] = mapOf(

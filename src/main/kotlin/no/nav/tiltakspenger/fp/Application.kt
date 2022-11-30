@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.fp
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.fp.abakusclient.AbakusClient
+import no.nav.tiltakspenger.fp.auth.AzureTokenProvider
 
 fun main() {
     System.setProperty("logback.configurationFile", "egenLogback.xml")
@@ -14,11 +16,16 @@ fun main() {
         securelog.error(e) { e.message }
     }
 
+    val tokenProviderClient = AzureTokenProvider()
+    val abakusClient = AbakusClient(
+        getToken = tokenProviderClient::getToken
+    )
+
     RapidApplication.create(Configuration.rapidsAndRivers).apply {
         ForeldrepengerService(
             rapidsConnection = this,
-
-            )
+            client = abakusClient
+        )
 
         register(object : RapidsConnection.StatusListener {
             override fun onStartup(rapidsConnection: RapidsConnection) {
