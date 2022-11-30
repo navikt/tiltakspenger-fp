@@ -9,15 +9,17 @@ import io.ktor.client.engine.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import mu.KotlinLogging
 import no.nav.tiltakspenger.fp.Configuration
 import no.nav.tiltakspenger.fp.defaultHttpClient
 import no.nav.tiltakspenger.fp.defaultObjectMapper
 import java.time.LocalDateTime
 
+private val LOG = KotlinLogging.logger {}
+
 fun interface TokenProvider {
     suspend fun getToken(): String
 }
-
 
 @Suppress("TooGenericExceptionCaught")
 class AzureTokenProvider(
@@ -25,9 +27,12 @@ class AzureTokenProvider(
     engine: HttpClientEngine? = null,
     private val config: OauthConfig = Configuration.oauthConfig(),
 ) : TokenProvider {
-    private val azureHttpClient = defaultHttpClient(
-        objectMapper = objectMapper, engine = engine
-    )
+    private val azureHttpClient = defaultHttpClient(objectMapper = objectMapper, engine = engine) {
+        System.getenv("HTTP_PROXY")?.let {
+            LOG.info("Setter opp proxy mot $it")
+            this.proxy = ProxyBuilder.http(it)
+        }
+    }
 
     private val tokenCache = TokenCache()
 

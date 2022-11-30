@@ -26,7 +26,7 @@ class AbakusClient(
     private val httpClient: HttpClient = defaultHttpClient(
         objectMapper = objectMapper,
         engine = engine
-    ) {}
+    )
 ) {
     companion object {
         const val navCallIdHeader = "Nav-Call-Id"

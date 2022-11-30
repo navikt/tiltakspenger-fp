@@ -28,3 +28,4 @@ spec:
     pool: {{ kafka.pool }}
   secureLogs:
     enabled: true
+  webproxy: true
