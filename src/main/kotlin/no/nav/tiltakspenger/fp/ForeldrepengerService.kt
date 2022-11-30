@@ -9,6 +9,8 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+import no.nav.helse.rapids_rivers.asOptionalLocalDate
+import java.time.LocalDate
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -31,6 +33,8 @@ class ForeldrepengerService(
                 it.forbid("@løsning")
                 it.requireKey("@id", "@behovId")
                 it.requireKey("ident")
+                it.requireKey("fom")
+                it.requireKey("tom")
             }
         }.register(this)
     }
@@ -44,6 +48,8 @@ class ForeldrepengerService(
             ) {
                 val ident = packet["ident"].asText()
                 SECURELOG.debug { "mottok ident $ident" }
+                val fom: LocalDate = packet["fom"].asOptionalLocalDate() ?: LocalDate.MIN
+                val tom: LocalDate = packet["tom"].asOptionalLocalDate() ?: LocalDate.MAX
 
                 runBlocking(MDCContext()) {
 
