@@ -33,21 +33,21 @@ object Configuration {
     private val localProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
-            "abakusScope" to "api://dev-fss.teamforeldrepenger.fpabakus/ekstern",
+            "abakusScope" to "api://dev-fss.teamforeldrepenger.fpabakus/.default",
             "abakusBaseUrl" to "https://fpabakus.dev.intern.nav.no",
         )
     )
     private val devProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.DEV.toString(),
-            "abakusScope" to "api://dev-fss.teamforeldrepenger.fpabakus/ekstern",
+            "abakusScope" to "api://dev-fss.teamforeldrepenger.fpabakus/.default",
             "abakusBaseUrl" to "https://fpabakus.dev.intern.nav.no",
         )
     )
     private val prodProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.PROD.toString(),
-            "abakusScope" to "api://prod-fss.teamforeldrepenger.fpabakus/ekstern",
+            "abakusScope" to "api://prod-fss.teamforeldrepenger.fpabakus/.default",
             "abakusBaseUrl" to "https://fpabakus.intern.nav.no",
         )
     )
