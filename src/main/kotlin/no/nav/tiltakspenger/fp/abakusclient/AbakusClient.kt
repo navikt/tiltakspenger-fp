@@ -34,19 +34,20 @@ class AbakusClient(
 
     @Suppress("TooGenericExceptionThrown")
     suspend fun hentYtelser(ident: String, fom: LocalDate, tom: LocalDate, behovId: String): List<YtelseV1> {
-        val httpResponse = httpClient.preparePost("${config.baseUrl}/ekstern/hentVedtakForPerson") {
-            header(navCallIdHeader, behovId)
-            bearerAuth(getToken())
-            accept(ContentType.Application.Json)
-            contentType(ContentType.Application.Json)
-            setBody(
-                Request(
-                    person = Person(ident),
-                    periode = Periode(fom = fom, tom = tom),
-                    ytelser = listOf(Ytelser.FORELDREPENGER)
+        val httpResponse =
+            httpClient.preparePost("${config.baseUrl}/ekstern/api/ytelse/v1/hent-vedtatte/for-ident") {
+                header(navCallIdHeader, behovId)
+                bearerAuth(getToken())
+                accept(ContentType.Application.Json)
+                contentType(ContentType.Application.Json)
+                setBody(
+                    Request(
+                        person = Person(ident),
+                        periode = Periode(fom = fom, tom = tom),
+                        ytelser = Ytelser.values().toList()
+                    )
                 )
-            )
-        }.execute()
+            }.execute()
         return when (httpResponse.status) {
             HttpStatusCode.OK -> httpResponse.call.response.body()
             else -> throw RuntimeException("error (responseCode=${httpResponse.status.value}) from Abakus")
