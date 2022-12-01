@@ -2,11 +2,16 @@ package no.nav.tiltakspenger.fp.abakusclient.models
 
 enum class Ytelser {
     /** Folketrygdloven K9 ytelser.  */
-    PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE, OMSORGSPENGER, OPPLÆRINGSPENGER,
+    PSB, // PLEIEPENGER_SYKT_BARN,
+    PPN, // PLEIEPENGER_NÆRSTÅENDE,
+    OMP, // OMSORGSPENGER,
+    OLP, // OPPLÆRINGSPENGER,
 
     /** Folketrygdloven K14 ytelser.  */
-    ENGANGSTØNAD, FORELDREPENGER, SVANGERSKAPSPENGER,
+    ES, // ENGANGSTØNAD,
+    FP, // FORELDREPENGER,
+    SVP // SVANGERSKAPSPENGER,
 
     /** Midlertidig ytelse for Selvstendig næringsdrivende og Frilansere (Anmodning 10).  */
-    FRISINN
+    // FRISINN
 }
