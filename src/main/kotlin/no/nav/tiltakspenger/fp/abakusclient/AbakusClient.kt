@@ -35,7 +35,7 @@ class AbakusClient(
     @Suppress("TooGenericExceptionThrown")
     suspend fun hentYtelser(ident: String, fom: LocalDate, tom: LocalDate, behovId: String): List<YtelseV1> {
         val httpResponse =
-            httpClient.preparePost("${config.baseUrl}/ekstern/api/ytelse/v1/hent-vedtatte/for-ident") {
+            httpClient.preparePost("${config.baseUrl}/fpabakus/ekstern/api/ytelse/v1/hent-vedtatte/for-ident") {
                 header(navCallIdHeader, behovId)
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
