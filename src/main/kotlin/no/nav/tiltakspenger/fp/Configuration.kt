@@ -33,7 +33,7 @@ object Configuration {
     private val localProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
-            "abakusScope" to "api://dev-ffs.teamforeldrepenger.fpabakus/ekstern",
+            "abakusScope" to "api://dev-fss.teamforeldrepenger.fpabakus/ekstern",
             "abakusBaseUrl" to "https://fpabakus.dev.intern.nav.no",
         )
     )
