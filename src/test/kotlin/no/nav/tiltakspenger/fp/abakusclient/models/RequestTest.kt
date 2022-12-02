@@ -13,7 +13,7 @@ internal class RequestTest {
     fun `skal mappes korrekt`() {
 
         val expectedJson = """
-        {"person":{"ident":"123"},"periode":{"fom":"2022-12-01","tom":"2022-09-01"},"ytelser":["ES","FP"]}
+        {"person":{"identType":"FNR","ident":"123"},"periode":{"fom":"2022-12-01","tom":"2022-09-01"},"ytelser":["ES","FP"]}
     """.trimIndent()
 
         val request = Request(

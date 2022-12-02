@@ -42,7 +42,7 @@ class AbakusClient(
                 contentType(ContentType.Application.Json)
                 setBody(
                     Request(
-                        person = Person(ident),
+                        person = Person(ident = ident),
                         periode = Periode(fom = fom, tom = tom),
                         ytelser = Ytelser.values().toList()
                     )
