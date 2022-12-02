@@ -9,6 +9,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import no.nav.tiltakspenger.fp.Configuration
 import no.nav.tiltakspenger.fp.abakusclient.models.Periode
+import no.nav.tiltakspenger.fp.abakusclient.models.Person
 import no.nav.tiltakspenger.fp.abakusclient.models.Request
 import no.nav.tiltakspenger.fp.abakusclient.models.YtelseV1
 import no.nav.tiltakspenger.fp.abakusclient.models.Ytelser
@@ -41,7 +42,7 @@ class AbakusClient(
                 contentType(ContentType.Application.Json)
                 setBody(
                     Request(
-                        personident = ident,
+                        person = Person(ident),
                         periode = Periode(fom = fom, tom = tom),
                         ytelser = Ytelser.values().toList()
                     )

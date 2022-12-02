@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.fp
 
 
-import com.fasterxml.jackson.core.util.DefaultIndenter
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.client.*
@@ -62,13 +62,9 @@ private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> 
     this.expectSuccess = true
 }
 
-fun defaultObjectMapper(): ObjectMapper = ObjectMapper()
-    .registerModule(KotlinModule.Builder().build())
-    .registerModule(JavaTimeModule())
-    .setDefaultPrettyPrinter(
-        DefaultPrettyPrinter().apply {
-            indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-            indentObjectsWith(DefaultIndenter("  ", "\n"))
-        }
-    )
+fun defaultObjectMapper(): ObjectMapper = JsonMapper.builder()
+    .addModule(KotlinModule.Builder().build())
+    .addModule(JavaTimeModule())
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+    .build()
