@@ -19,7 +19,7 @@ internal class RequestTest {
         val request = Request(
             person = Person(ident = "123"),
             periode = Periode(fom = LocalDate.of(2022, 12, 1), tom = LocalDate.of(2022, 9, 1)),
-            ytelser = listOf(Ytelser.ES, Ytelser.FP)
+            ytelser = listOf(YtelserInput.ES, YtelserInput.FP)
         )
 
         val mapper = defaultObjectMapper()

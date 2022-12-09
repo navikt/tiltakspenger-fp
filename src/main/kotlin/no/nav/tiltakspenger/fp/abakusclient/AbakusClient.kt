@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.fp.abakusclient.models.Periode
 import no.nav.tiltakspenger.fp.abakusclient.models.Person
 import no.nav.tiltakspenger.fp.abakusclient.models.Request
 import no.nav.tiltakspenger.fp.abakusclient.models.YtelseV1
-import no.nav.tiltakspenger.fp.abakusclient.models.Ytelser
+import no.nav.tiltakspenger.fp.abakusclient.models.YtelserInput
 import no.nav.tiltakspenger.fp.defaultHttpClient
 import no.nav.tiltakspenger.fp.defaultObjectMapper
 import java.time.LocalDate
@@ -44,7 +44,7 @@ class AbakusClient(
                     Request(
                         person = Person(ident = ident),
                         periode = Periode(fom = fom, tom = tom),
-                        ytelser = Ytelser.values().toList()
+                        ytelser = YtelserInput.values().toList()
                     )
                 )
             }.execute()
