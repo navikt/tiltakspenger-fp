@@ -21,6 +21,8 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
+  strategy:
+    type: Recreate
   replicas:
     min: 1
     max: 1
