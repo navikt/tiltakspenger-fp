@@ -1,12 +1,17 @@
 package no.nav.tiltakspenger.fp.abakusclient
 
-
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.request.accept
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.header
+import io.ktor.client.request.preparePost
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import no.nav.tiltakspenger.fp.Configuration
 import no.nav.tiltakspenger.fp.abakusclient.models.Periode
 import no.nav.tiltakspenger.fp.abakusclient.models.Person
@@ -16,7 +21,6 @@ import no.nav.tiltakspenger.fp.abakusclient.models.YtelserInput
 import no.nav.tiltakspenger.fp.defaultHttpClient
 import no.nav.tiltakspenger.fp.defaultObjectMapper
 import java.time.LocalDate
-
 
 class AbakusClient(
     private val config: AbakusClientConfig = Configuration.abakusClientConfig(),
@@ -32,7 +36,6 @@ class AbakusClient(
         const val navCallIdHeader = "Nav-Call-Id"
     }
 
-    @Suppress("TooGenericExceptionThrown")
     suspend fun hentYtelser(ident: String, fom: LocalDate, tom: LocalDate, behovId: String): List<YtelseV1> {
         val httpResponse =
             httpClient.preparePost("${config.baseUrl}/fpabakus/ekstern/api/ytelse/v1/hent-vedtatte/for-ident") {

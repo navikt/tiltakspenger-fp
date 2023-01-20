@@ -1,14 +1,16 @@
 package no.nav.tiltakspenger.fp.auth
 
-
-import io.ktor.client.engine.mock.*
-import io.ktor.http.*
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.fp.defaultObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-@Suppress("TooGenericExceptionThrown")
 internal class AzureTokenProviderTest {
 
     @Test
@@ -23,6 +25,7 @@ internal class AzureTokenProviderTest {
                     status = HttpStatusCode.OK,
                     headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 )
+
                 tokenEndpoint -> respond(
                     content = """{ 
                         |"access_token": "$accessToken", 
@@ -33,6 +36,7 @@ internal class AzureTokenProviderTest {
                     status = HttpStatusCode.OK,
                     headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 )
+
                 else -> throw RuntimeException("Should not happen")
             }
         }

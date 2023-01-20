@@ -8,13 +8,12 @@ import java.time.LocalDate
 
 internal class RequestTest {
 
-
     @Test
     fun `skal mappes korrekt`() {
 
         val expectedJson = """
         {"person":{"identType":"FNR","ident":"123"},"periode":{"fom":"2022-12-01","tom":"2022-09-01"},"ytelser":["ES","FP"]}
-    """.trimIndent()
+        """.trimIndent()
 
         val request = Request(
             person = Person(ident = "123"),
@@ -31,6 +30,4 @@ internal class RequestTest {
             JSONCompareMode.STRICT
         )
     }
-
-
 }

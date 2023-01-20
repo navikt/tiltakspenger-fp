@@ -17,7 +17,6 @@ import java.time.LocalDate
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-@Suppress("UnusedPrivateMember")
 class ForeldrepengerService(
     rapidsConnection: RapidsConnection,
     private val client: AbakusClient,

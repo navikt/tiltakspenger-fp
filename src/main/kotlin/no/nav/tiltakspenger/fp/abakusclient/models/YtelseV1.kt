@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.fp.abakusclient.models
 
 import java.time.LocalDateTime
 
-
 data class YtelseV1(
     val version: String,
     val aktør: Aktør,
