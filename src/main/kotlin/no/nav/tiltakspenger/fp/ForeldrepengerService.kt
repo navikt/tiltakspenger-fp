@@ -7,12 +7,24 @@ import mu.withLoggingContext
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
+import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asOptionalLocalDate
 import no.nav.tiltakspenger.fp.abakusclient.AbakusClient
+import no.nav.tiltakspenger.fp.abakusclient.models.Anvisning
+import no.nav.tiltakspenger.fp.abakusclient.models.Kildesystem
+import no.nav.tiltakspenger.fp.abakusclient.models.Status
 import no.nav.tiltakspenger.fp.abakusclient.models.YtelseV1
+import no.nav.tiltakspenger.fp.abakusclient.models.YtelserOutput
+import no.nav.tiltakspenger.libs.fp.FPResponsDTO
+import no.nav.tiltakspenger.libs.fp.FPResponsDTO.AnvisningDTO
+import no.nav.tiltakspenger.libs.fp.FPResponsDTO.YtelseV1DTO
 import java.time.LocalDate
+import no.nav.tiltakspenger.libs.fp.FPResponsDTO.Kildesystem as dtoKildesystem
+import no.nav.tiltakspenger.libs.fp.FPResponsDTO.Periode as dtoPeriode
+import no.nav.tiltakspenger.libs.fp.FPResponsDTO.Status as dtoStatus
+import no.nav.tiltakspenger.libs.fp.FPResponsDTO.YtelserOutput as dtoYelserOutput
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -42,11 +54,12 @@ class ForeldrepengerService(
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
+        println("onPacket")
         runCatching {
             loggVedInngang(packet)
             withLoggingContext(
                 "id" to packet["@id"].asText(),
-                "behovId" to packet["@behovId"].asText()
+                "behovId" to packet["@behovId"].asText(),
             ) {
                 val ident = packet["ident"].asText()
                 val behovId = packet["@behovId"].asText()
@@ -58,8 +71,15 @@ class ForeldrepengerService(
                     client.hentYtelser(ident, fom, tom, behovId)
                 }
 
+                val respons = FPResponsDTO(
+                    ytelser = ytelser.map {
+                        mapYtelseV1(it)
+                    },
+                    feil = null,
+                )
+
                 packet["@løsning"] = mapOf(
-                    BEHOV.FP_YTELSER to ytelser
+                    BEHOV.FP_YTELSER to respons,
                 )
                 loggVedUtgang(packet)
                 context.publish(ident, packet.toJson())
@@ -69,16 +89,76 @@ class ForeldrepengerService(
         }.getOrThrow()
     }
 
+    override fun onError(problems: MessageProblems, context: MessageContext) {
+        println("onError")
+    }
+
+    override fun onSevere(error: MessageProblems.MessageException, context: MessageContext) {
+        println("onSevere")
+        println(error)
+        println(context)
+    }
+
+    private fun mapYtelseV1(ytelseV1: YtelseV1): YtelseV1DTO {
+        return YtelseV1DTO(
+            version = ytelseV1.version,
+            aktør = ytelseV1.aktør.verdi,
+            vedtattTidspunkt = ytelseV1.vedtattTidspunkt,
+            ytelse = when (ytelseV1.ytelse) {
+                YtelserOutput.PLEIEPENGER_SYKT_BARN -> dtoYelserOutput.PLEIEPENGER_SYKT_BARN
+                YtelserOutput.PLEIEPENGER_NÆRSTÅENDE -> dtoYelserOutput.PLEIEPENGER_NÆRSTÅENDE
+                YtelserOutput.OMSORGSPENGER -> dtoYelserOutput.OMSORGSPENGER
+                YtelserOutput.OPPLÆRINGSPENGER -> dtoYelserOutput.OPPLÆRINGSPENGER
+                YtelserOutput.ENGANGSTØNAD -> dtoYelserOutput.ENGANGSTØNAD
+                YtelserOutput.FORELDREPENGER -> dtoYelserOutput.FORELDREPENGER
+                YtelserOutput.SVANGERSKAPSPENGER -> dtoYelserOutput.SVANGERSKAPSPENGER
+                YtelserOutput.FRISINN -> dtoYelserOutput.FRISINN
+            },
+            saksnummer = ytelseV1.saksnummer,
+            vedtakReferanse = ytelseV1.vedtakReferanse,
+            ytelseStatus = when (ytelseV1.ytelseStatus) {
+                Status.UNDER_BEHANDLING -> dtoStatus.UNDER_BEHANDLING
+                Status.LØPENDE -> dtoStatus.LØPENDE
+                Status.AVSLUTTET -> dtoStatus.AVSLUTTET
+                Status.UKJENT -> dtoStatus.UKJENT
+            },
+            kildesystem = when (ytelseV1.kildesystem) {
+                Kildesystem.FPSAK -> dtoKildesystem.FPSAK
+                Kildesystem.K9SAK -> dtoKildesystem.K9SAK
+            },
+            periode = dtoPeriode(
+                fom = ytelseV1.periode.fom,
+                tom = ytelseV1.periode.tom,
+            ),
+            tilleggsopplysninger = ytelseV1.tilleggsopplysninger,
+            anvist = mapAnvist(ytelseV1.anvist),
+        )
+    }
+
+    private fun mapAnvist(anvisninger: List<Anvisning>): List<AnvisningDTO> {
+        return anvisninger.map { anvisning ->
+            AnvisningDTO(
+                periode = dtoPeriode(
+                    fom = anvisning.periode.fom,
+                    tom = anvisning.periode.tom,
+                ),
+                beløp = anvisning.beløp?.verdi,
+                dagsats = anvisning.dagsats?.verdi,
+                utbetalingsgrad = anvisning.utbetalingsgrad?.verdi,
+            )
+        }
+    }
+
     fun loggVedInngang(packet: JsonMessage) {
         LOG.info(
             "løser fp-behov med {} og {}",
             StructuredArguments.keyValue("id", packet["@id"].asText()),
-            StructuredArguments.keyValue("behovId", packet["@behovId"].asText())
+            StructuredArguments.keyValue("behovId", packet["@behovId"].asText()),
         )
         SECURELOG.info(
             "løser fp-behov med {} og {}",
             StructuredArguments.keyValue("id", packet["@id"].asText()),
-            StructuredArguments.keyValue("behovId", packet["@behovId"].asText())
+            StructuredArguments.keyValue("behovId", packet["@behovId"].asText()),
         )
         SECURELOG.debug { "mottok melding: ${packet.toJson()}" }
     }
@@ -87,12 +167,12 @@ class ForeldrepengerService(
         LOG.info(
             "har løst fp-behov med {} og {}",
             StructuredArguments.keyValue("id", packet["@id"].asText()),
-            StructuredArguments.keyValue("behovId", packet["@behovId"].asText())
+            StructuredArguments.keyValue("behovId", packet["@behovId"].asText()),
         )
         SECURELOG.info(
             "har løst fp-behov med {} og {}",
             StructuredArguments.keyValue("id", packet["@id"].asText()),
-            StructuredArguments.keyValue("behovId", packet["@behovId"].asText())
+            StructuredArguments.keyValue("behovId", packet["@behovId"].asText()),
         )
         SECURELOG.debug { "publiserer melding: ${packet.toJson()}" }
     }
@@ -106,7 +186,7 @@ class ForeldrepengerService(
             "feil \"${ex.message}\" ved behandling av fp-behov med {} og {}",
             StructuredArguments.keyValue("id", packet["@id"].asText()),
             StructuredArguments.keyValue("packet", packet.toJson()),
-            ex
+            ex,
         )
     }
 }

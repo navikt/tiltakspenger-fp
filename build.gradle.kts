@@ -3,6 +3,7 @@ val ktorVersion = "2.2.2"
 val kotestVersion = "5.5.4"
 val jacksonVersion = "2.14.1"
 val mockkVersion = "1.13.3"
+val felleslibVersion = "0.0.18"
 
 plugins {
     application
@@ -30,6 +31,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
 //    implementation("io.prometheus:simpleclient:$prometheusVersion")
 //    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:fp-dtos:$felleslibVersion")
     implementation("com.github.navikt:rapids-and-rivers:2022122311551671792919.2bdd972d7bdb")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.6.4")
     implementation("org.jetbrains:annotations:24.0.0")
