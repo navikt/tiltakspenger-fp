@@ -41,37 +41,12 @@ internal class ForeldrepengerServiceTest {
 
     @Test
     fun `Sjekk happy case`() {
-        val beløp = 100
-        val sats = 50
-        val grad = 10
 
         coEvery { abakusClient.hentYtelser(any(), any(), any(), any()) } returns listOf(
-            YtelseV1(
-                version = "v1",
-                aktør = Aktør(verdi = "aktørId"),
-                vedtattTidspunkt = LocalDateTime.of(2022, 1, 1, 12, 0, 0, 0),
-                ytelse = YtelserOutput.PLEIEPENGER_SYKT_BARN,
-                saksnummer = "sakNr",
-                vedtakReferanse = "Ref",
-                ytelseStatus = Status.LØPENDE,
-                kildesystem = Kildesystem.FPSAK,
-                periode = Periode(
-                    fom = LocalDate.of(2022, 1, 1),
-                    tom = LocalDate.of(2022, 1, 31),
-                ),
-                tilleggsopplysninger = "Tillegg",
-                anvist = listOf(
-                    Anvisning(
-                        periode = Periode(
-                            fom = LocalDate.of(2022, 1, 1),
-                            tom = LocalDate.of(2022, 1, 31),
-                        ),
-                        beløp = Desimaltall(beløp.toBigDecimal()),
-                        dagsats = Desimaltall(sats.toBigDecimal()),
-                        utbetalingsgrad = Desimaltall(grad.toBigDecimal()),
-                    ),
-                ),
-            ),
+            mockYtelse,
+        )
+        coEvery { abakusClient.hentYtelserv2(any(), any(), any(), any()) } returns listOf(
+            mockYtelse,
         )
 
         testRapid.sendTestMessage(behovMelding)
@@ -87,6 +62,37 @@ internal class ForeldrepengerServiceTest {
             )
         }
     }
+
+    private val beløp = 100
+    private val sats = 50
+    private val grad = 10
+
+    private val mockYtelse = YtelseV1(
+        version = "v1",
+        aktør = Aktør(verdi = "aktørId"),
+        vedtattTidspunkt = LocalDateTime.of(2022, 1, 1, 12, 0, 0, 0),
+        ytelse = YtelserOutput.PLEIEPENGER_SYKT_BARN,
+        saksnummer = "sakNr",
+        vedtakReferanse = "Ref",
+        ytelseStatus = Status.LØPENDE,
+        kildesystem = Kildesystem.FPSAK,
+        periode = Periode(
+            fom = LocalDate.of(2022, 1, 1),
+            tom = LocalDate.of(2022, 1, 31),
+        ),
+        tilleggsopplysninger = "Tillegg",
+        anvist = listOf(
+            Anvisning(
+                periode = Periode(
+                    fom = LocalDate.of(2022, 1, 1),
+                    tom = LocalDate.of(2022, 1, 31),
+                ),
+                beløp = Desimaltall(beløp.toBigDecimal()),
+                dagsats = Desimaltall(sats.toBigDecimal()),
+                utbetalingsgrad = Desimaltall(grad.toBigDecimal()),
+            ),
+        ),
+    )
 
     private val svar = """
             {

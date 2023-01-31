@@ -67,6 +67,11 @@ class ForeldrepengerService(
                 val fom: LocalDate = packet["fom"].asOptionalLocalDate() ?: LocalDate.MIN
                 val tom: LocalDate = packet["tom"].asOptionalLocalDate() ?: LocalDate.MAX
 
+                val ytelser2: List<YtelseV1> = runBlocking(MDCContext()) {
+                    client.hentYtelserv2(ident, fom, tom, behovId)
+                }
+                SECURELOG.info { "svar fra nytt endepunkt : $ytelser2" }
+
                 val ytelser: List<YtelseV1> = runBlocking(MDCContext()) {
                     client.hentYtelser(ident, fom, tom, behovId)
                 }
