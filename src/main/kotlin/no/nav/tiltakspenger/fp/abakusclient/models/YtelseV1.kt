@@ -6,7 +6,7 @@ data class YtelseV1(
     val version: String,
     val aktør: Aktør,
     val vedtattTidspunkt: LocalDateTime,
-    val ytelse: YtelserOutput,
+    val ytelse: Ytelser,
     val saksnummer: String?,
     val vedtakReferanse: String,
     val ytelseStatus: Status,

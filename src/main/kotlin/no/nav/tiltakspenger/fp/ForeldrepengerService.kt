@@ -7,7 +7,6 @@ import mu.withLoggingContext
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
-import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asOptionalLocalDate
@@ -16,7 +15,7 @@ import no.nav.tiltakspenger.fp.abakusclient.models.Anvisning
 import no.nav.tiltakspenger.fp.abakusclient.models.Kildesystem
 import no.nav.tiltakspenger.fp.abakusclient.models.Status
 import no.nav.tiltakspenger.fp.abakusclient.models.YtelseV1
-import no.nav.tiltakspenger.fp.abakusclient.models.YtelserOutput
+import no.nav.tiltakspenger.fp.abakusclient.models.Ytelser
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO.AnvisningDTO
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO.YtelseV1DTO
@@ -54,7 +53,6 @@ class ForeldrepengerService(
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        println("onPacket")
         runCatching {
             loggVedInngang(packet)
             withLoggingContext(
@@ -64,19 +62,25 @@ class ForeldrepengerService(
                 val ident = packet["ident"].asText()
                 val behovId = packet["@behovId"].asText()
                 SECURELOG.debug { "mottok ident $ident" }
-                val fom: LocalDate = packet["fom"].asOptionalLocalDate() ?: LocalDate.of(1970, 1, 1)
-                val tom: LocalDate = packet["tom"].asOptionalLocalDate() ?: LocalDate.of(9999, 12, 31)
+                val fom: LocalDate = packet["fom"].asOptionalLocalDate() ?: LocalDate.MIN
+                val tom: LocalDate = packet["tom"].asOptionalLocalDate() ?: LocalDate.MAX
 
-                val ytelser2: List<YtelseV1> = runBlocking(MDCContext()) {
-                    client.hentYtelserv2(ident, fom, tom, behovId)
+                val fomFixed = if (fom == LocalDate.MIN) {
+                    LocalDate.of(1970, 1, 1)
+                } else {
+                    fom
                 }
-                SECURELOG.info { "svar fra nytt endepunkt : $ytelser2" }
+
+                val tomFixed = if (tom == LocalDate.MAX) {
+                    LocalDate.of(9999, 12, 31)
+                } else {
+                    tom
+                }
 
                 val ytelser: List<YtelseV1> = runBlocking(MDCContext()) {
-                    client.hentYtelser(ident, fom, tom, behovId)
+                    client.hentYtelser(ident, fomFixed, tomFixed, behovId)
                 }
-
-                SECURELOG.info { "svar fra gammelt endepunkt : $ytelser" }
+                SECURELOG.info { "svar fra nytt endepunkt : $ytelser" }
 
                 val respons = FPResponsDTO(
                     ytelser = ytelser.map {
@@ -96,30 +100,20 @@ class ForeldrepengerService(
         }.getOrThrow()
     }
 
-    override fun onError(problems: MessageProblems, context: MessageContext) {
-        println("onError")
-    }
-
-    override fun onSevere(error: MessageProblems.MessageException, context: MessageContext) {
-        println("onSevere")
-        println(error)
-        println(context)
-    }
-
     private fun mapYtelseV1(ytelseV1: YtelseV1): YtelseV1DTO {
         return YtelseV1DTO(
             version = ytelseV1.version,
             aktør = ytelseV1.aktør.verdi,
             vedtattTidspunkt = ytelseV1.vedtattTidspunkt,
             ytelse = when (ytelseV1.ytelse) {
-                YtelserOutput.PLEIEPENGER_SYKT_BARN -> dtoYelserOutput.PLEIEPENGER_SYKT_BARN
-                YtelserOutput.PLEIEPENGER_NÆRSTÅENDE -> dtoYelserOutput.PLEIEPENGER_NÆRSTÅENDE
-                YtelserOutput.OMSORGSPENGER -> dtoYelserOutput.OMSORGSPENGER
-                YtelserOutput.OPPLÆRINGSPENGER -> dtoYelserOutput.OPPLÆRINGSPENGER
-                YtelserOutput.ENGANGSTØNAD -> dtoYelserOutput.ENGANGSTØNAD
-                YtelserOutput.FORELDREPENGER -> dtoYelserOutput.FORELDREPENGER
-                YtelserOutput.SVANGERSKAPSPENGER -> dtoYelserOutput.SVANGERSKAPSPENGER
-                YtelserOutput.FRISINN -> dtoYelserOutput.FRISINN
+                Ytelser.PLEIEPENGER_SYKT_BARN -> dtoYelserOutput.PLEIEPENGER_SYKT_BARN
+                Ytelser.PLEIEPENGER_NÆRSTÅENDE -> dtoYelserOutput.PLEIEPENGER_NÆRSTÅENDE
+                Ytelser.OMSORGSPENGER -> dtoYelserOutput.OMSORGSPENGER
+                Ytelser.OPPLÆRINGSPENGER -> dtoYelserOutput.OPPLÆRINGSPENGER
+                Ytelser.ENGANGSTØNAD -> dtoYelserOutput.ENGANGSTØNAD
+                Ytelser.FORELDREPENGER -> dtoYelserOutput.FORELDREPENGER
+                Ytelser.SVANGERSKAPSPENGER -> dtoYelserOutput.SVANGERSKAPSPENGER
+                Ytelser.FRISINN -> dtoYelserOutput.FRISINN
             },
             saksnummer = ytelseV1.saksnummer,
             vedtakReferanse = ytelseV1.vedtakReferanse,

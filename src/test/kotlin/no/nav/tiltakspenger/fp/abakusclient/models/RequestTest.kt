@@ -12,16 +12,16 @@ internal class RequestTest {
     fun `skal mappes korrekt`() {
 
         val expectedJson = """
-        {"person":{"identType":"FNR","ident":"123"},"periode":{"fom":"2022-12-01","tom":"2022-09-01"},"ytelser":["ES","FP"]}
+        {"ident":{"verdi":"123"},"periode":{"fom":"2022-12-01","tom":"2022-09-01"},"ytelser":["ENGANGSTØNAD","FORELDREPENGER"]}
         """.trimIndent()
 
         val request = Request(
-            person = Person(ident = "123"),
+            ident = Ident(verdi = "123"),
             periode = Periode(
                 fom = LocalDate.of(2022, 12, 1),
                 tom = LocalDate.of(2022, 9, 1),
             ),
-            ytelser = listOf(YtelserInput.ES, YtelserInput.FP),
+            ytelser = listOf(Ytelser.ENGANGSTØNAD, Ytelser.FORELDREPENGER),
         )
 
         val mapper = defaultObjectMapper()
@@ -38,16 +38,16 @@ internal class RequestTest {
     fun `skal mappes LocalDate MAX korrekt`() {
 
         val expectedJson = """
-        {"person":{"identType":"FNR","ident":"123"},"periode":{"fom":"1970-01-01","tom":"9999-12-31"},"ytelser":["ES","FP"]}
+        {"ident":{"verdi":"123"},"periode":{"fom":"1970-01-01","tom":"9999-12-31"},"ytelser":["ENGANGSTØNAD","FORELDREPENGER"]}
         """.trimIndent()
 
         val request = Request(
-            person = Person(ident = "123"),
+            ident = Ident(verdi = "123"),
             periode = Periode(
                 fom = LocalDate.of(1970, 1, 1),
                 tom = LocalDate.of(9999, 12, 31),
             ),
-            ytelser = listOf(YtelserInput.ES, YtelserInput.FP),
+            ytelser = listOf(Ytelser.ENGANGSTØNAD, Ytelser.FORELDREPENGER),
         )
 
         val mapper = defaultObjectMapper()

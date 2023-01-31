@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.fp.abakusclient.models.Kildesystem
 import no.nav.tiltakspenger.fp.abakusclient.models.Periode
 import no.nav.tiltakspenger.fp.abakusclient.models.Status
 import no.nav.tiltakspenger.fp.abakusclient.models.YtelseV1
-import no.nav.tiltakspenger.fp.abakusclient.models.YtelserOutput
+import no.nav.tiltakspenger.fp.abakusclient.models.Ytelser
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -45,9 +45,6 @@ internal class ForeldrepengerServiceTest {
         coEvery { abakusClient.hentYtelser(any(), any(), any(), any()) } returns listOf(
             mockYtelse,
         )
-        coEvery { abakusClient.hentYtelserv2(any(), any(), any(), any()) } returns listOf(
-            mockYtelse,
-        )
 
         testRapid.sendTestMessage(behovMelding)
 
@@ -71,7 +68,7 @@ internal class ForeldrepengerServiceTest {
         version = "v1",
         aktør = Aktør(verdi = "aktørId"),
         vedtattTidspunkt = LocalDateTime.of(2022, 1, 1, 12, 0, 0, 0),
-        ytelse = YtelserOutput.PLEIEPENGER_SYKT_BARN,
+        ytelse = Ytelser.PLEIEPENGER_SYKT_BARN,
         saksnummer = "sakNr",
         vedtakReferanse = "Ref",
         ytelseStatus = Status.LØPENDE,
