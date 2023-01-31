@@ -64,8 +64,8 @@ class ForeldrepengerService(
                 val ident = packet["ident"].asText()
                 val behovId = packet["@behovId"].asText()
                 SECURELOG.debug { "mottok ident $ident" }
-                val fom: LocalDate = packet["fom"].asOptionalLocalDate() ?: LocalDate.MIN
-                val tom: LocalDate = packet["tom"].asOptionalLocalDate() ?: LocalDate.MAX
+                val fom: LocalDate = packet["fom"].asOptionalLocalDate() ?: LocalDate.of(1970, 1, 1)
+                val tom: LocalDate = packet["tom"].asOptionalLocalDate() ?: LocalDate.of(9999, 12, 31)
 
                 val ytelser2: List<YtelseV1> = runBlocking(MDCContext()) {
                     client.hentYtelserv2(ident, fom, tom, behovId)
@@ -75,6 +75,8 @@ class ForeldrepengerService(
                 val ytelser: List<YtelseV1> = runBlocking(MDCContext()) {
                     client.hentYtelser(ident, fom, tom, behovId)
                 }
+
+                SECURELOG.info { "svar fra gammelt endepunkt : $ytelser" }
 
                 val respons = FPResponsDTO(
                     ytelser = ytelser.map {
