@@ -12,6 +12,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import mu.KotlinLogging
 import no.nav.tiltakspenger.fp.Configuration
 import no.nav.tiltakspenger.fp.abakusclient.models.Periode
 import no.nav.tiltakspenger.fp.abakusclient.models.Person
@@ -23,6 +24,8 @@ import no.nav.tiltakspenger.fp.abakusclient.models.YtelserInput
 import no.nav.tiltakspenger.fp.defaultHttpClient
 import no.nav.tiltakspenger.fp.defaultObjectMapper
 import java.time.LocalDate
+
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class AbakusClient(
     private val config: AbakusClientConfig = Configuration.abakusClientConfig(),
@@ -60,6 +63,7 @@ class AbakusClient(
     }
 
     suspend fun hentYtelserv2(ident: String, fom: LocalDate, tom: LocalDate, behovId: String): List<YtelseV1> {
+        SECURELOG.info { getToken }
         val httpResponse =
             httpClient.preparePost("${config.baseUrl}/fpabakus/ekstern/api/ytelse/v1/hent-vedtatte/hent-ytelse-vedtak") {
                 header(navCallIdHeader, behovId)
