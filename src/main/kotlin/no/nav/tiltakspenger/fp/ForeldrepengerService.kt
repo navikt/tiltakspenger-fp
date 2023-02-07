@@ -1,5 +1,12 @@
 package no.nav.tiltakspenger.fp
 
+import com.fasterxml.jackson.core.util.DefaultIndenter
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
@@ -9,7 +16,6 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
-import no.nav.helse.rapids_rivers.asOptionalLocalDate
 import no.nav.tiltakspenger.fp.abakusclient.AbakusClient
 import no.nav.tiltakspenger.fp.abakusclient.models.Anvisning
 import no.nav.tiltakspenger.fp.abakusclient.models.Kildesystem
@@ -37,6 +43,18 @@ class ForeldrepengerService(
         internal object BEHOV {
             const val FP_YTELSER = "fpytelser"
         }
+
+        val objectmapper: ObjectMapper = ObjectMapper()
+            .registerModule(KotlinModule.Builder().build())
+            .registerModule(JavaTimeModule())
+            .setDefaultPrettyPrinter(
+                DefaultPrettyPrinter().apply {
+                    indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+                    indentObjectsWith(DefaultIndenter("  ", "\n"))
+                },
+            )
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     }
 
     init {
@@ -62,19 +80,31 @@ class ForeldrepengerService(
                 val ident = packet["ident"].asText()
                 val behovId = packet["@behovId"].asText()
                 SECURELOG.debug { "mottok ident $ident" }
-                val fom: LocalDate = packet["fom"].asOptionalLocalDate() ?: LocalDate.MIN
-                val tom: LocalDate = packet["tom"].asOptionalLocalDate() ?: LocalDate.MAX
+                val fom: String = packet["fom"].asText("1970-01-01")
+                val tom: String = packet["tom"].asText("9999-12-31")
 
-                val fomFixed = if (fom == LocalDate.MIN) {
-                    LocalDate.of(1970, 1, 1)
-                } else {
-                    fom
+                val fomFixed = try {
+                    val tempFom: LocalDate = objectmapper.readValue(fom, LocalDate::class.java)
+                    if (tempFom == LocalDate.MIN) {
+                        LocalDate.EPOCH
+                    } else {
+                        tempFom
+                    }
+                } catch (e: Exception) {
+                    LOG.warn("Klarte ikke å parse fom $fom", e)
+                    LocalDate.EPOCH
                 }
 
-                val tomFixed = if (tom == LocalDate.MAX) {
+                val tomFixed = try {
+                    val tempTom: LocalDate = objectmapper.readValue(tom, LocalDate::class.java)
+                    if (tempTom == LocalDate.MAX) {
+                        LocalDate.of(9999, 12, 31)
+                    } else {
+                        tempTom
+                    }
+                } catch (e: Exception) {
+                    LOG.warn("Klarte ikke å parse tom $tom", e)
                     LocalDate.of(9999, 12, 31)
-                } else {
-                    tom
                 }
 
                 val ytelser: List<YtelseV1> = runBlocking(MDCContext()) {
