@@ -84,7 +84,7 @@ class ForeldrepengerService(
                 val tom: String = packet["tom"].asText("9999-12-31")
 
                 val fomFixed = try {
-                    val tempFom: LocalDate = objectmapper.readValue(fom, LocalDate::class.java)
+                    val tempFom: LocalDate = LocalDate.parse(fom)
                     if (tempFom == LocalDate.MIN) {
                         LocalDate.EPOCH
                     } else {
@@ -96,7 +96,7 @@ class ForeldrepengerService(
                 }
 
                 val tomFixed = try {
-                    val tempTom: LocalDate = objectmapper.readValue(tom, LocalDate::class.java)
+                    val tempTom: LocalDate = LocalDate.parse(tom)
                     if (tempTom == LocalDate.MAX) {
                         LocalDate.of(9999, 12, 31)
                     } else {
