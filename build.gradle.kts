@@ -3,7 +3,7 @@ val ktorVersion = "2.2.3"
 val kotestVersion = "5.5.5"
 val jacksonVersion = "2.14.2"
 val mockkVersion = "1.13.4"
-val felleslibVersion = "0.0.20"
+val felleslibVersion = "0.0.28"
 
 plugins {
     application
@@ -25,7 +25,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("org.jetbrains:annotations:24.0.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
