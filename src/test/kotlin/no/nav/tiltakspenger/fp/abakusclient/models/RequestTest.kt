@@ -10,7 +10,6 @@ internal class RequestTest {
 
     @Test
     fun `skal mappes korrekt`() {
-
         val expectedJson = """
         {"ident":{"verdi":"123"},"periode":{"fom":"2022-12-01","tom":"2022-09-01"},"ytelser":["ENGANGSTØNAD","FORELDREPENGER"]}
         """.trimIndent()
@@ -36,7 +35,6 @@ internal class RequestTest {
 
     @Test
     fun `skal mappes LocalDate MAX korrekt`() {
-
         val expectedJson = """
         {"ident":{"verdi":"123"},"periode":{"fom":"1970-01-01","tom":"9999-12-31"},"ytelser":["ENGANGSTØNAD","FORELDREPENGER"]}
         """.trimIndent()

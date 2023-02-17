@@ -23,7 +23,7 @@ internal class AzureTokenProviderTest {
                 wellKnownUrl -> respond(
                     content = """{ "token_endpoint": "$tokenEndpoint" }""",
                     status = HttpStatusCode.OK,
-                    headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
                 )
 
                 tokenEndpoint -> respond(
@@ -34,7 +34,7 @@ internal class AzureTokenProviderTest {
                         |"expires_in": "1" }
                     """.trimMargin(),
                     status = HttpStatusCode.OK,
-                    headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
                 )
 
                 else -> throw RuntimeException("Should not happen")
@@ -48,8 +48,8 @@ internal class AzureTokenProviderTest {
                 wellknownUrl = wellKnownUrl,
                 clientSecret = "opensecret",
                 clientId = "id",
-                scope = "scope"
-            )
+                scope = "scope",
+            ),
         )
 
         val token: String = runBlocking {

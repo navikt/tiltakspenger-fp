@@ -11,5 +11,5 @@ enum class Inntektklasse {
     JORDBRUKER,
     FISKER,
     ARBEIDSTAKER_UTEN_FERIEPENGER,
-    INGEN
+    INGEN,
 }

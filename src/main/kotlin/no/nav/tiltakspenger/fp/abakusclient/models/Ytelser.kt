@@ -13,5 +13,5 @@ enum class Ytelser {
     SVANGERSKAPSPENGER,
 
     /** Midlertidig ytelse for Selvstendig næringsdrivende og Frilansere (Anmodning 10).  */
-    FRISINN
+    FRISINN,
 }

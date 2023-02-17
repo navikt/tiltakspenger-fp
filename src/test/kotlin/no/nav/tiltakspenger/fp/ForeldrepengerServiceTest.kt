@@ -41,7 +41,6 @@ internal class ForeldrepengerServiceTest {
 
     @Test
     fun `Sjekk happy case`() {
-
         coEvery { abakusClient.hentYtelser(any(), any(), any(), any()) } returns listOf(
             mockYtelse,
         )
@@ -55,7 +54,8 @@ internal class ForeldrepengerServiceTest {
             println(message(0).toPrettyString())
             JSONAssert.assertEquals(
                 svar,
-                message(0).toPrettyString(), JSONCompareMode.LENIENT,
+                message(0).toPrettyString(),
+                JSONCompareMode.LENIENT,
             )
         }
     }

@@ -18,13 +18,13 @@ fun main() {
 
     val tokenProviderClient = AzureTokenProvider()
     val abakusClient = AbakusClient(
-        getToken = tokenProviderClient::getToken
+        getToken = tokenProviderClient::getToken,
     )
 
     RapidApplication.create(Configuration.rapidsAndRivers).apply {
         ForeldrepengerService(
             rapidsConnection = this,
-            client = abakusClient
+            client = abakusClient,
         )
 
         register(object : RapidsConnection.StatusListener {

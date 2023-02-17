@@ -16,7 +16,6 @@ internal class AbakusClientTest {
 
     @Test
     fun `skal klare å deserialisere bodyen som returneres`() {
-
         val mockEngine = MockEngine { request ->
             respond(
                 content = """
@@ -47,13 +46,13 @@ internal class AbakusClientTest {
                         }]
                 """.trimIndent(),
                 status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
             )
         }
 
         val client = AbakusClient(
             getToken = { "whatever" },
-            engine = mockEngine
+            engine = mockEngine,
         )
 
         val response: List<YtelseV1> = runBlocking {
@@ -61,7 +60,7 @@ internal class AbakusClientTest {
                 ident = "x",
                 fom = LocalDate.MIN,
                 tom = LocalDate.MAX,
-                behovId = "y"
+                behovId = "y",
             )
         }
         response.size shouldBe 1
