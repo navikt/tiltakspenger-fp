@@ -146,7 +146,7 @@ class ForeldrepengerService(
                 Ytelser.FRISINN -> dtoYelserOutput.FRISINN
             },
             saksnummer = ytelseV1.saksnummer,
-            vedtakReferanse = ytelseV1.vedtakReferanse,
+            vedtakReferanse = ytelseV1.vedtakReferanse ?: "",
             ytelseStatus = when (ytelseV1.ytelseStatus) {
                 Status.UNDER_BEHANDLING -> dtoStatus.UNDER_BEHANDLING
                 Status.LØPENDE -> dtoStatus.LØPENDE
@@ -156,6 +156,16 @@ class ForeldrepengerService(
             kildesystem = when (ytelseV1.kildesystem) {
                 Kildesystem.FPSAK -> dtoKildesystem.FPSAK
                 Kildesystem.K9SAK -> dtoKildesystem.K9SAK
+                else -> when (ytelseV1.ytelse) {
+                    Ytelser.PLEIEPENGER_SYKT_BARN -> dtoKildesystem.K9SAK
+                    Ytelser.PLEIEPENGER_NÆRSTÅENDE -> dtoKildesystem.K9SAK
+                    Ytelser.OMSORGSPENGER -> dtoKildesystem.K9SAK
+                    Ytelser.OPPLÆRINGSPENGER -> dtoKildesystem.K9SAK
+                    Ytelser.ENGANGSTØNAD -> dtoKildesystem.FPSAK
+                    Ytelser.FORELDREPENGER -> dtoKildesystem.FPSAK
+                    Ytelser.SVANGERSKAPSPENGER -> dtoKildesystem.FPSAK
+                    Ytelser.FRISINN -> dtoKildesystem.FPSAK
+                }
             },
             periode = dtoPeriode(
                 fom = ytelseV1.periode.fom,
