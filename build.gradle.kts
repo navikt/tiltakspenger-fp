@@ -32,7 +32,7 @@ dependencies {
 //    implementation("io.prometheus:simpleclient:$prometheusVersion")
 //    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("com.github.navikt.tiltakspenger-libs:fp-dtos:$felleslibVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2022122311551671792919.2bdd972d7bdb")
+    implementation("com.github.navikt:rapids-and-rivers:2023022210271677058038.ec07e03eceb6")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.6.4")
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("com.natpryce:konfig:1.6.10.0")
