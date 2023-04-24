@@ -34,14 +34,14 @@ object Configuration {
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
             "abakusScope" to "api://dev-fss.teamforeldrepenger.fpabakus/.default",
-            "abakusBaseUrl" to "https://fpabakus.dev.intern.nav.no",
+            "abakusBaseUrl" to "https://fpabakus.intern.dev.nav.no",
         ),
     )
     private val devProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.DEV.toString(),
             "abakusScope" to "api://dev-fss.teamforeldrepenger.fpabakus/.default",
-            "abakusBaseUrl" to "https://fpabakus.dev.intern.nav.no",
+            "abakusBaseUrl" to "https://fpabakus.intern.dev.nav.no",
         ),
     )
     private val prodProperties = ConfigurationMap(
