@@ -107,11 +107,6 @@ class ForeldrepengerService(
                     LocalDate.of(9999, 12, 31)
                 }
 
-                val ytelser: List<YtelseV1> = runBlocking(MDCContext()) {
-                    client.hentYtelser(ident, fomFixed, tomFixed, behovId)
-                }
-                SECURELOG.info { "svar fra nytt endepunkt : $ytelser" }
-
                 val respons =
                     if ((ident == "18907299828") or (ident == "13866799568")) { // hopper over denne da den ikke finnes i dev
                         FPResponsDTO(
@@ -119,6 +114,10 @@ class ForeldrepengerService(
                             feil = null,
                         )
                     } else {
+                        val ytelser: List<YtelseV1> = runBlocking(MDCContext()) {
+                            client.hentYtelser(ident, fomFixed, tomFixed, behovId)
+                        }
+                        SECURELOG.info { "svar fra nytt endepunkt : $ytelser" }
                         FPResponsDTO(
                             ytelser = ytelser.map {
                                 mapYtelseV1(it)
