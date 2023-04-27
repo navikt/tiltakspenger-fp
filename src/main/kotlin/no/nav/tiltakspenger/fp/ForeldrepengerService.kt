@@ -112,19 +112,20 @@ class ForeldrepengerService(
                 }
                 SECURELOG.info { "svar fra nytt endepunkt : $ytelser" }
 
-                val respons = if (ident == "18907299828") { // hopper over denne da den ikke finnes i dev
-                    FPResponsDTO(
-                        ytelser = emptyList(),
-                        feil = null,
-                    )
-                } else {
-                    FPResponsDTO(
-                        ytelser = ytelser.map {
-                            mapYtelseV1(it)
-                        },
-                        feil = null,
-                    )
-                }
+                val respons =
+                    if ((ident == "18907299828") or (ident == "13866799568")) { // hopper over denne da den ikke finnes i dev
+                        FPResponsDTO(
+                            ytelser = emptyList(),
+                            feil = null,
+                        )
+                    } else {
+                        FPResponsDTO(
+                            ytelser = ytelser.map {
+                                mapYtelseV1(it)
+                            },
+                            feil = null,
+                        )
+                    }
 
                 packet["@løsning"] = mapOf(
                     BEHOV.FP_YTELSER to respons,
