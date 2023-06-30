@@ -1,5 +1,5 @@
 val javaVersion = JavaVersion.VERSION_17
-val ktorVersion = "2.3.1"
+val ktorVersion = "2.3.2"
 val kotestVersion = "5.5.5"
 val jacksonVersion = "2.15.2"
 val mockkVersion = "1.13.5"
