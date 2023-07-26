@@ -28,7 +28,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("org.jetbrains:annotations:24.0.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")
 //    implementation("io.prometheus:simpleclient:$prometheusVersion")
 //    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("com.github.navikt.tiltakspenger-libs:fp-dtos:$felleslibVersion")
