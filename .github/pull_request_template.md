@@ -3,6 +3,3 @@
 
 ## Kommentarer
 <!--- Er det noe mer som bør opplyses om til den som ser over? -->
-
-## Visuelle endringer:
-<!--- Legg ved skjermbilder av de visuelle endringene dersom det er relevant -->
